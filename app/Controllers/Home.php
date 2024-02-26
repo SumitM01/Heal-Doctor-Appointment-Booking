@@ -43,6 +43,12 @@ class Home extends BaseController
         return view('appointment_list', $fmobj->fmGetAptData());
     }
 
+    public function appointment_cal()
+    {
+        $fmobj = new FMdbops();
+        return view('appointment_cal', $fmobj->fmGetAptData());
+    }
+
     public function doctor_detail()
     {
         return view('doctor_detail');

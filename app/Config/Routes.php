@@ -13,7 +13,7 @@ $routes->get('/doctors_list','Home::doctor_view', ['filter'=> 'auth']);
 $routes->get('/doctor-details','Home::doctor_detail', ['filter'=> 'auth']);
 $routes->match(['get','post'], '/apt-book','Appointment::create', ['filter'=> 'auth']);
 $routes->get('/user-logout','Auth::user_logout');
-
+$routes->post('/getapttimes', 'Appointment::fetchAppointmentsByUserIdDate');
 $routes->post('/apt-create', 'Appointment::create');
 $routes->match(['get', 'post'], '/apt-update', 'Appointment::update', ['filter'=> 'auth']);
 $routes->get('/apt-delete', 'Appointment::delete');
@@ -22,5 +22,6 @@ $routes->get('/fminsert', 'FMdbops::fmInsertData');
 $routes->get('/fmgetthr','FMdbops::fmGetTherapistData');
 $routes->get('/fmgetapt','FMdbops::fmGetAptData');
 $routes->get('/appointments','Home::appointment_list', ['filter'=> 'auth']);
+$routes->get('/appointments-cal','Home::appointment_cal', ['filter'=> 'auth']);
 // $routes->post('/home/user_authenticate_login', 'Auth::user_authenticate_login');
 // $routes->post('/home/user_authenticate_signup', 'Auth::user_authenticate_signup');

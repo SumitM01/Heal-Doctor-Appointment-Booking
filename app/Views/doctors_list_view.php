@@ -9,7 +9,7 @@
 
         <!-- Load Bootstrap JS and dependencies -->
         <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
-        <title>Book Appointment </title>
+        <title>Doctors</title>
     </head>
 
     <body>

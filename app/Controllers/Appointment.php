@@ -117,12 +117,16 @@ class Appointment extends BaseController
         
         if($this->request->getMethod() == 'get'){
             $id = $this->request->getGet('id');
+            // print_r($id); 
             $model = new AppointmentsModel();
 
             // Delete the Appointment ID from the local db using the fmRecordId
             try{
                 // print_r($this->request->getPost('aptid'));
-                $apt_id = $model->where('fmRecordId', $this->request->getPost('id'));
+                $model->where('fmRecordId', $id)->delete();
+                // print_r($apt_id); exit();
+                // $model->delete($apt_id);
+                // exit();
             }
             catch(\Exception $e){
                 $data['msg'] = $e->getMessage();
@@ -139,6 +143,33 @@ class Appointment extends BaseController
             }
         }
         return redirect('appointments');
+    }
+
+    public function fetchAppointmentsByUserIdDate()
+    {
+        // Load the model
+        $appointmentsModel = new AppointmentsModel();
+
+        // Get User ID and Date from request or session, for example
+        $userId = $this->request->getVar('user_id');
+        $date = $this->request->getVar('date');  
+        
+
+        // Call the model function
+        $appointments = $appointmentsModel->getAppointmentsByUserIdDate($userId, date('Y-m-d',strtotime($date)));
+        $data = [
+            'times'=> []
+        ];
+        foreach($appointments as $appointment){
+          array_push($data['times'], $appointment['Time_slot']);
+        }
+        print_r(json_encode($data)); exit();
+
+        // Do something with $appointments, like passing it to a view
+        // header('Content-Type: application/json');
+        // echo json_encode($data);
+        // exit();
+
     }
 
 }

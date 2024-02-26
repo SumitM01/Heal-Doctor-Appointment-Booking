@@ -174,7 +174,7 @@ class FMdbops extends BaseController
         $this->fmValidateSession();
         $requestBody = [
             "fieldData"=> [
-                "Therapist_Name"=>$data['Therapist_Name'],
+                // "Therapist_Name"=>$data['Therapist_Name'],
                 "Date"=>date('m-d-Y',strtotime($data['Date'])),
                 "Time_Slot"=>$data['Time_slot'],
             ]
@@ -226,7 +226,7 @@ class FMdbops extends BaseController
 
         //Delete the data from the database
         try{
-            $response = $client->request('PATCH','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($id), [
+            $response = $client->request('DELETE','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($id), [
                 'headers'=> [
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer ' . $this->Token
@@ -249,35 +249,4 @@ class FMdbops extends BaseController
         return $data;
     }
     
-    // public function WrapperInsertData(){
-    //     $User = 'APIaccess2';
-    //     $Pass = 'dataAPI24';
-    //     $requestBody = [
-    //         "fmServer"=> "208.85.249.144",
-    //         "method" => "createRecord",
-    //         "methodBody" => [
-    //             "database"=>"Therapy_Service_Tracker_Data",
-    //             "layout"=>"APPOINTMENTS",
-    //             "record"=>[
-    //                 "Therapist_Name"=> "Varun Sharma",
-    //                 "Date"=> "02-12-2024",
-    //                 "Time_Slot"=> "16:34:00"
-    //             ]
-    //         ]
-    //     ];
-
-    //     try{
-    //         $client = Services::curlrequest();
-    //         $response = $client->request("POST","https://dataapi-o2iw.onrender.com/api/dataApi", [
-    //             'headers'=> [
-    //                 'Content-Type' => 'application/json',
-    //                 'Authorization' => 'Basic ' . base64_encode($User . ':' . $Pass)
-    //             ],
-    //             'body'=> json_encode($requestBody)
-    //         ]);
-    //     }
-    //     catch(\Exception $e){
-    //         print_r($e);
-    //     }
-    // }
 }

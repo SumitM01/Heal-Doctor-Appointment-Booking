@@ -10,17 +10,7 @@
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
     <title>Update Appointment</title>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
-    <script>
-
-      document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar')
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth'
-        })
-        calendar.render()
-      })
-
-    </script>
+    
   </head>
   <body>
     <?php $id = $_GET['id'] ?? ''; ?>
@@ -80,6 +70,7 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        var selectedDate = "2024-03-15";
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -91,7 +82,8 @@
                 //Also store the date in the form to be submitted for appointment booking
                 document.getElementsByName('date')[0].value = info.dateStr;
                 document.getElementById('submitbutton').style ="visibility: hidden;";
-            }
+            },
+            initialDate: selectedDate
         });
         calendar.render();
 
@@ -111,10 +103,7 @@
             return `${hours}:${minutes}:00`;
         }
 
-        function showTimeSlots(selectedDate) {
-          // predefined time slots
-          var timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
-
+        function generateTimeSlotsHTML(timeSlots, aptTimes, selectedDate){
           // Create HTML for time slots
           var html = '<div class="tab-pane fade show active" id="timeSlotsContent" role="tabpanel">';
           html += '<h3>Available Time Slots for ' + selectedDate + '</h3>';
@@ -126,11 +115,18 @@
               if (index % 3 === 0 && index !== 0) {
                   html += '</div><div class="row">'; // Close current row and start a new one
               }
-
-              // Add tab for the time slot
-              html += '<div class="col">'; // Column
-              html += '<button class="btn btn-outline-success m-3 timeslot-btn">' + slot + '</button>';
-              html += '</div>'; // End column
+              //Check if the time slot is present in the aptTimes, if not print it.
+              // console.log(convertTimeTo24HourFormat(slot));
+              // console.log(typeof(convertTimeTo24HourFormat(slot)));
+              // console.log(aptTimes.includes(convertTimeTo24HourFormat(slot)));
+              if(aptTimes.includes(convertTimeTo24HourFormat(slot)) == false){
+                // Add tab for the time slot
+                
+                html += '<div class="col-md-4">'; // Column
+                html += '<button class="btn btn-outline-success m-3 timeslot-btn">' + slot + '</button>';
+                html += '</div>'; // End column
+              }
+              
           });
 
           html += '</div>'; // Close the last row
@@ -147,6 +143,32 @@
                   document.getElementsByName('time')[0].value = convertTimeTo24HourFormat(selectedTime);
                   document.getElementById('submitbutton').style ="visibility: visible;";
               });
+          });
+        }
+
+        function showTimeSlots(selectedDate) {
+          // predefined time slots
+          var timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
+
+          //Fetch the related timings for the user ID and data selected from the appointment records
+          var userid = <?php echo $_SESSION['id'] ?>;
+          var aptTimes = [];
+          //AJAX request to the PHP controller
+          fetch("/getapttimes", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user_id: userid, date: selectedDate})
+          })
+          .then(response => response.json())
+          .then(data => {
+            aptTimes = data.times;
+            console.log(aptTimes);
+            generateTimeSlotsHTML(timeSlots, aptTimes, selectedDate);
+          })
+          .catch(error => {
+            console.error('Error', error);
           });
         }
       });

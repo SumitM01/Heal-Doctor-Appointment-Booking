@@ -62,4 +62,8 @@ class AppointmentsModel extends Model
     public function getAppointmentByFMRecordId($id){
         return $this->where('fmRecordId', $id)->first();
     }
+
+    public function getAppointmentsByUserIdDate($id, $Date){
+        return $this->where('User_ID', $id)->where('Date', $Date)->findAll();
+    }
 }

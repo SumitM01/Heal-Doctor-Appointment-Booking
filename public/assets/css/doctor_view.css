@@ -30,3 +30,25 @@ div > main > img{
     display:flex;
     flex-flow:column
 } */
+
+.table-responsive th{
+    cursor:pointer;
+    background-color: rgba(0, 60, 82, 0.9);
+    color: white;
+}
+
+.table-responsive th:hover{
+    background-color: rgba(0, 60, 82, 1);
+    color: white;
+}
+
+.table-responsive th[data-order="asc"]::after{
+    content:"\25be";
+}
+.table-responsive th[data-order="desc"]::after{
+    content:"\25b4";
+}
+
+.table-responsive th .clickable.clicked {
+    background-color: rgba(0, 60, 82, 1);
+  }
