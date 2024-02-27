@@ -15,8 +15,7 @@ class Appointment extends BaseController
         //
     }
 
-    public function create()
-    {
+    public function create(){
         if($this->request->getMethod() == "post"){
             
             $model = new AppointmentsModel();
@@ -43,7 +42,6 @@ class Appointment extends BaseController
 
             // Insert data into local MySQL database
             try{
-                
                 if($model->insert($data)){
                     $data['msg'] = 'Success! Data inserted successfully!';
                     
@@ -56,7 +54,7 @@ class Appointment extends BaseController
                 $data['msg'] = $e->getMessage();
             }
 
-            return view('Apt_booking', $data);
+            return view('doctors_list_view', $data);
         }
         else{
             return view('Apt_booking');
@@ -64,8 +62,7 @@ class Appointment extends BaseController
         
     }
 
-    public function update()
-    {
+    public function update(){
         if($this->request->getMethod() == "post"){
             $model = new AppointmentsModel();
 

@@ -13,6 +13,7 @@
     </head>
 
     <body>
+        
         <div class="ba-container">
             <!-- Main content containing the sidebar and the doctors list container in a flex box -->
             <div class="d-flex" id="main">
@@ -41,6 +42,9 @@
                             </svg>
                             Appointments
                             </a>
+                        </li>
+                        <li>
+                            
                         </li>
                     </ul>
                     <hr>
@@ -73,22 +77,6 @@
                     <!-- div containing select doctors and filters button -->
                     <div class="d-flex justify-content-between m-3">
                         <h4>Select your Doctor</h4>
-                        <!-- <div class="dropdown" id="filters">
-                            <a href="#" class="d-flex align-items-center dropdown-toggle btn" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
-                                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-                                </svg>
-                                <strong>Filters</strong>
-                            </a>
-                            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
-                                <li>
-                                    <a class="dropdown-item" href="#">Relevant</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">Type</a>
-                                </li>
-                            </ul>
-                        </div> -->
                     </div>
                     <!-- div containing doctors list -->
                     <div class="list-group">
@@ -126,90 +114,6 @@
                             <?php }
                         }
                         ?>
-                        <!-- <div class="card m-2">
-                            <div class="row g-0">
-                                <div class="col-md-3">
-                                    <img src="https://i.imgur.com/s1Aa8So.png" class="m-3 img-fluid w-50" alt="Doctor Image">
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Dr. Amelia Chopitea Villa</h5>
-                                        <p class="card-text"><b>Cardiologist</b></p>
-                                        <ul class="d-flex px-0">
-                                            <li class="mx-3">
-                                                MBBS
-                                            </li>
-                                            <li class="mx-3">
-                                                10 years Exp
-                                            </li>
-                                            <li class="mx-3">
-                                                Milan
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>  
-                                <div class="col-md-3 p-4">
-                                    <a href="<?= base_url('/apt-book') ?>?therapist=<?= urlencode('Dr. Amelia Chopitea Villa') ?>" class="btn m-2">Book Appointment</a>
-                                    <a href="<?= base_url('/doctor-details') ?>" class="btn  m-2">Know More</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-2">
-                            <div class="row g-0">
-                                <div class="col-md-3">
-                                    <img src="https://i.imgur.com/iTTh7Pp.png" class="m-3 img-fluid w-50" alt="Doctor Image">
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Dr. Franc Bertelli</h5>
-                                        <p class="card-text"><b>Physician</b></p>
-                                        <ul class="d-flex px-0">
-                                            <li class="mx-3">
-                                                MBBS
-                                            </li>
-                                            <li class="mx-3">
-                                                8 years Exp
-                                            </li>
-                                            <li class="mx-3">
-                                                Paris
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>  
-                                <div class="col-md-3 p-4">
-                                    <a href="#" class="btn m-2">Book Appointment</a>
-                                    <a href="#" class="btn  m-2">Know More</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card m-2">
-                            <div class="row g-0">
-                                <div class="col-md-3">
-                                    <img src="https://i.imgur.com/iTTh7Pp.png" class="m-3 img-fluid w-50" alt="Doctor Image">
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Dr. Suresh Prabhakar</h5>
-                                        <p class="card-text"><b>Oncologist</b></p>
-                                        <ul class="d-flex px-0">
-                                            <li class="mx-3">
-                                                MBBS
-                                            </li>
-                                            <li class="mx-3">
-                                                11 years Exp
-                                            </li>
-                                            <li class="mx-3">
-                                                Delhi
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>  
-                                <div class="col-md-3 p-4">
-                                    <a href="#" class="btn m-2">Book Appointment</a>
-                                    <a href="#" class="btn  m-2">Know More</a>
-                                </div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
             </div>
