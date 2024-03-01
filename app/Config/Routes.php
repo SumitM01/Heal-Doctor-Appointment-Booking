@@ -25,3 +25,7 @@ $routes->get('/appointments','Home::appointment_list', ['filter'=> 'auth']);
 $routes->get('/appointments-cal','Home::appointment_cal', ['filter'=> 'auth']);
 // $routes->post('/home/user_authenticate_login', 'Auth::user_authenticate_login');
 // $routes->post('/home/user_authenticate_signup', 'Auth::user_authenticate_signup');
+
+//Google calendar
+$routes->get('/googleauth', 'GoogleCalendar::googleAuth');
+$routes->get('/getGoogleAccessToken','GoogleCalendar::getTokens');

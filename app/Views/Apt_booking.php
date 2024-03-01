@@ -9,6 +9,26 @@ use App\Models\AppointmentsModel;
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/cover.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/doctor_view.css') ?>">
+    <style>
+      /* The Close Button */
+      .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+          background-color: white;
+          border: none;
+      }
+
+      .close:hover,
+      .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+          background-color: white;
+          border: none;
+      }
+    </style>
 
     <!-- Load Bootstrap JS and dependencies -->
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
@@ -27,7 +47,54 @@ use App\Models\AppointmentsModel;
     </script>
   </head>
   <body>
-    <?php $therapistName = $_GET['therapist'] ?? ''; ?>
+   <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Appointment Created</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body" id="modalContent">
+              <!-- Appointment details will be populated here -->
+          </div>
+          <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Dismiss</button>
+          </div>
+          </div>
+      </div>
+      </div>
+    <?php
+    $therapistName = $_GET['therapist'] ?? '';
+    $flashdata = session()->getFlashdata('data');
+    
+    if (!empty($flashdata)) {
+      // print_r($flashdata['msg']);
+      
+        ?>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var myModal = new bootstrap.Modal(document.getElementById("myModal"));
+          var modalContent = document.getElementById("modalContent");
+
+          // Populate modal content with event details
+          modalContent.innerHTML = `Your appointment has been created and <?php echo $flashdata['msg'] ?>`;
+
+          // Show the modal
+          myModal.show();
+
+          // Close modal when close button is clicked
+          var closeButton = document.querySelector(".modal .close");
+          closeButton.addEventListener("click", function() {
+              myModal.hide();
+          });
+        });
+        
+        </script>
+        <?php
+      }
+    ?>
     
     <div class="container h-100 p-4 bg-white rounded">
         <div class="row">

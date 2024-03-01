@@ -13,7 +13,46 @@
     </head>
 
     <body>
-        
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Google Authorization</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Appointment details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Not now</button>
+                    <a id="confirmCancel" href="googleauth" class="btn btn-outline-dark">Yes, Please</a>
+            </div>
+            </div>
+        </div>
+        </div>
+        <?php
+            use App\Models\UsersModel;
+            $model = new UsersModel();
+            $dbdata = $model->where('User_ID', session()->get('id'))->first();
+            $accessToken = $dbdata['GoogleCalendarAccessToken'];
+            if(empty($accessToken)){ ?>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            var myModal = new bootstrap.Modal(document.getElementById("myModal"));
+            var modalContent = document.getElementById("modalContent");
+
+            // Populate modal content with event details
+            modalContent.innerHTML = `
+                Do you want to authorize Google to create events in your google calendar automatically?
+            `;
+
+            // Show the modal
+            myModal.show();
+            });
+            </script>
+        <?php } ?>
         <div class="ba-container">
             <!-- Main content containing the sidebar and the doctors list container in a flex box -->
             <div class="d-flex" id="main">
@@ -76,6 +115,7 @@
                 <div class="flex-grow-1 bg-light m-4 p-3 overflow-scroll rounded">
                     <!-- div containing select doctors and filters button -->
                     <div class="d-flex justify-content-between m-3">
+                        
                         <h4>Select your Doctor</h4>
                     </div>
                     <!-- div containing doctors list -->

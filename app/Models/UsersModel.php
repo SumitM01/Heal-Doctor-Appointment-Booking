@@ -16,6 +16,9 @@ class UsersModel extends Model
         'Name',
         'Email',
         'Password',
+        'GoogleCalendarAccessToken',
+        'GoogleCalendarRefreshToken',
+        'FMDataAPIToken'
     ];
 
     protected bool $allowEmptyInserts = false;

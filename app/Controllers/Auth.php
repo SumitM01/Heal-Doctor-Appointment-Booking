@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * 
+ * This controller handles user login, logout and signup related operations
+ * 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 namespace App\Controllers;
 
 use App\Controllers\BaseController;

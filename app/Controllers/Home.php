@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * 
+ * This controller is used for all navigational and miscellaneous operations
+ * 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;

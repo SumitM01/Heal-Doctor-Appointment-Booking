@@ -1,8 +1,16 @@
 <?php
-
+/**
+ * 
+ * This controller is used for all the appointment related operations
+ * 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\UsersModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\AppointmentsModel;
 use App\Controllers\HomeController;
@@ -29,6 +37,22 @@ class Appointment extends BaseController
                 'Status' => 'Active',
             ];
 
+            //Insert data into google calendar 
+            $model = new UsersModel();
+            $dbdata = $model->where('User_ID', session()->get('id'))->first();
+            $accessToken = $dbdata['GoogleCalendarAccessToken'];
+            if(!empty($accessToken) ){
+                try{
+                    $controller = new GoogleCalendar();
+                    $response = $controller->createCalendarEvent($data);
+                    // print_r($response);
+                    $data['msg'] = $response['msg'];
+                }   
+                catch(\Exception $e){
+                    $data['msg'] = $e->getMessage();
+                }
+            }
+
             // Insert the provided data into the Filemaker Database using Data API.
             try{
                 $controller = new FMdbops();
@@ -42,9 +66,9 @@ class Appointment extends BaseController
 
             // Insert data into local MySQL database
             try{
+                $model = new AppointmentsModel();
                 if($model->insert($data)){
                     $data['msg'] = 'Success! Data inserted successfully!';
-                    
                 }
                 else{
                     $data['msg'] = 'Failure during data insertion!';
@@ -54,7 +78,9 @@ class Appointment extends BaseController
                 $data['msg'] = $e->getMessage();
             }
 
-            return view('doctors_list_view', $data);
+            
+            return redirect()->back()->with('data', $data);
+            
         }
         else{
             return view('Apt_booking');

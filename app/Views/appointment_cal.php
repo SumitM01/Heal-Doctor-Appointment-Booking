@@ -6,6 +6,8 @@
         <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
         <link rel="stylesheet" href="<?= base_url('assets/css/cover.css') ?>">
         <link rel="stylesheet" href="<?= base_url('assets/css/doctor_view.css') ?>">
+        <!-- <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'> -->
         <style>
             .btn.active{
                 background-color:rgb(0, 60, 82);
@@ -34,7 +36,7 @@
                 margin: 15% auto; 
                 padding: 20px;
                 border: 1px solid #888;
-                width: 80%; 
+                width: 100%; 
             }
 
             /* The Close Button */
@@ -43,6 +45,8 @@
                 float: right;
                 font-size: 28px;
                 font-weight: bold;
+                background-color: white;
+                border: none;
             }
 
             .close:hover,
@@ -50,6 +54,8 @@
                 color: black;
                 text-decoration: none;
                 cursor: pointer;
+                background-color: white;
+                border: none;
             }
         </style>
 
@@ -72,8 +78,10 @@
 
                     // Populate modal content with event details
                     modalContent.innerHTML = `
-                        <h5>Title: ${eventObj.title}</h5>
-                        <p>Start: ${eventObj.start}</p>
+                        <p><b>${eventObj.title}</b></p>
+                        <p><b>Date</b>: ${eventObj.start.toLocaleDateString('en-US')}</p>
+                        <p><b>Time</b>: ${eventObj.start.toLocaleTimeString('en-US')}</p>
+                        <p><b>Status</b>: ----</p>
                     `;
 
                     // Show the modal
@@ -93,6 +101,7 @@
                     });
                 },
                 // height: '100%',
+                // themeSystem: 'standard',
                 initialView: 'dayGridMonth',
                 events: [
                     <?php
