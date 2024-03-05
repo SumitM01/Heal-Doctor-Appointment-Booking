@@ -49,24 +49,23 @@ class FMdbops extends BaseController
             // Check the response status data['code']
             if($response->getStatusCode() == 200) {
                 
-                //Decode the response body
+                //Decode the json response body
                 $responseData = json_decode($response->getBody(), true);
                 //Get the session token and store it
-                // $_SESSION['fmToken'] = $responseData['response']['token'];
                 $this->index($responseData['response']['token']);
-                // $this->Token = $responseData['response']['token'];
             }
         }
         catch(\Exception $e){
             print_r('Validation Error');
         }
-        // print_r("Stored Token: " . $this->Token);
-        // return true;
     }
 
     //Function to insert data into FM database
     public function fmInsertData($data){
+        //validate the session and get a new token
         $this->fmValidateSession();
+
+        //Prepare the json body to be sent with the request
         $requestBody = [
             "fieldData"=> [
                 "User_ID"=>$data['User_ID'],
@@ -75,10 +74,11 @@ class FMdbops extends BaseController
                 "Time_Slot"=>$data['Time_slot'],
             ]
         ];
-        // $body = json_encode($requestBody);
         $data = [];
         $client = Services::curlrequest();
-        // print_r("Bearer ".$this->Token);
+        // print_r("Bearer ".$this->Token); //debug purpose
+
+        //Send the request to create new record using the body defined above
         try{
            
             $response = $client->request('POST','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records', [
@@ -93,12 +93,12 @@ class FMdbops extends BaseController
             // Check if the request was successful
             if ($response->getStatusCode() == 200) {
                 $data['code'] = $response->getStatusCode();
-                //Insert the returned recordID in the MySQL DB
+                //Insert the returned recordID in the MySQL DB for future use
                 $recordID = json_decode($response->getBody(), true)['response']['recordId'];
                 $data['fmRecordId'] = $recordID;
                 // print_r($data); exit();
             } else {
-                // Error occurred
+                // if any error occurs just record it
                 $data['code'] = $response->getStatusCode();
             }
         }
@@ -107,7 +107,7 @@ class FMdbops extends BaseController
             if (strpos($e->getMessage(), '401 Unauthorized') !== false) {
                 // Renew the session token
                 $this->fmValidateSession();
-                print_r($e->getMessage());
+                // print_r($e->getMessage());
 
                 // Retry the insert operation with the new session token
                 $this->fmInsertData($data);
@@ -119,7 +119,8 @@ class FMdbops extends BaseController
         }
         return $data;
     }
-//  Get the therapist list from the FileMaker Database
+
+    // Get the therapist list from the FileMaker Database
     public function fmGetTherapistData(){
         //Validate the session and get the validation token
         $this->fmValidateSession();
@@ -147,7 +148,7 @@ class FMdbops extends BaseController
 
     }
 
-// Get the appointments list for a user from the Filemaker Database
+    // Get the appointments list for a user from the Filemaker Database
     public function fmGetAptData(){
         //Validate the session and get the validation token
         $this->fmValidateSession();
@@ -178,17 +179,21 @@ class FMdbops extends BaseController
    
 
     public function fmUpdateData($data){
+        //Validate the session and get a new session token
         $this->fmValidateSession();
+
+        //Prepare the new session body to be sent
         $requestBody = [
             "fieldData"=> [
-                // "Therapist_Name"=>$data['Therapist_Name'],
                 "Date"=>date('m-d-Y',strtotime($data['Date'])),
                 "Time_Slot"=>$data['Time_slot'],
             ]
         ];
         $data['code'] = '';
         $client = Services::curlrequest();
-        // print_r("Bearer ".$this->Token);
+        // print_r("Bearer ".$this->Token); //debugging purpose
+
+        // Send the request to update the record in the database using the fmRecordId
         try{
            
             $response = $client->request('PATCH','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($data['fmRecordId']), [
@@ -213,7 +218,7 @@ class FMdbops extends BaseController
             if (strpos($e->getMessage(), '401 Unauthorized') !== false) {
                 // Renew the session token
                 $this->fmValidateSession();
-                print_r($e->getMessage());
+                // print_r($e->getMessage());
 
                 // Retry the insert operation with the new session token
                 $this->fmInsertData($data);

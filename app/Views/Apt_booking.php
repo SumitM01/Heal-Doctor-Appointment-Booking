@@ -1,3 +1,11 @@
+/**
+ * 
+ * This View is for booking an appointment using the calendar and the time slots displayed
+ * 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 <?php
 use App\Models\AppointmentsModel;
 ?>
@@ -32,10 +40,10 @@ use App\Models\AppointmentsModel;
 
     <!-- Load Bootstrap JS and dependencies -->
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
-    <title>Book Appointment </title>
+    <title>Book Appointment</title>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
     <script>
-
+      //Render the JavaScript Calendar on page load
       document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar')
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -47,7 +55,8 @@ use App\Models\AppointmentsModel;
     </script>
   </head>
   <body>
-   <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal for displaying appointment created message -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
           <div class="modal-content">
           <div class="modal-header">
@@ -64,11 +73,12 @@ use App\Models\AppointmentsModel;
           </div>
           </div>
       </div>
-      </div>
+    </div>
     <?php
+    //Get the therapist name from the GET array and flashdata from the response
     $therapistName = $_GET['therapist'] ?? '';
     $flashdata = session()->getFlashdata('data');
-    
+    //If the flash data returned is not empty
     if (!empty($flashdata)) {
       // print_r($flashdata['msg']);
       
@@ -95,7 +105,7 @@ use App\Models\AppointmentsModel;
         <?php
       }
     ?>
-    
+    <!-- Container that contains the whole page elements -->
     <div class="container h-100 p-4 bg-white rounded">
         <div class="row">
           <div class="col-md-1">
@@ -197,9 +207,7 @@ use App\Models\AppointmentsModel;
                   html += '</div><div class="row">'; // Close current row and start a new one
               }
               //Check if the time slot is present in the aptTimes, if not print it.
-              // console.log(convertTimeTo24HourFormat(slot));
-              // console.log(typeof(convertTimeTo24HourFormat(slot)));
-              // console.log(aptTimes.includes(convertTimeTo24HourFormat(slot)));
+              
               if(aptTimes.includes(convertTimeTo24HourFormat(slot)) == false){
                 // Add tab for the time slot
                 
@@ -229,7 +237,7 @@ use App\Models\AppointmentsModel;
 
         function showTimeSlots(selectedDate) {
           // Predefined time slots
-          var timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
+          var timeSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'];
 
           //Fetch the related timings for the user ID and data selected from the appointment records
           var userid = <?php echo $_SESSION['id'] ?>;

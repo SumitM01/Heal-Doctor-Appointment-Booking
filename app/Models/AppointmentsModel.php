@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * 
+ * Appointment Model : Contains all settings and configuration for appointment table
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 namespace App\Models;
 
 use CodeIgniter\Model;

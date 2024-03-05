@@ -29,7 +29,7 @@ class Home extends BaseController
         return view('welcome_message');
     }
 
-    //hello world controller
+    //Heal Landing page controller
     public function heal()
     {
         return view('heal');
@@ -39,7 +39,7 @@ class Home extends BaseController
     {   
         //create fmdbops object
         $fmobj = new FMdbops();
-        //call fmdbops get details to get doctor details
+        //call fmdbops->get_details to get doctor details
         //Process the provided data and display the doctors list to the user
         return view('doctors_list_view', $fmobj->fmGetTherapistData());
     }

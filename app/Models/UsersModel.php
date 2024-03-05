@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * 
+ * User Model: contains all user related data and database configuration
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 namespace App\Models;
 
 use CodeIgniter\Model;

@@ -1,3 +1,10 @@
+/**
+ * 
+ * This view is for displaying all the Therapist Details in list view 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 <!DOCTYPE html>
 <html>
     <head>

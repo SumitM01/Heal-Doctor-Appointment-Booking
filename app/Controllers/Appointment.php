@@ -22,15 +22,16 @@ class Appointment extends BaseController
     {
         //
     }
-
+    //Function that creates an apppointment and stores the record in Filemaker DB, local MySQL DB and creates a google calendar event for that appointment
     public function create(){
+        //Check if the method is POST then continue with create event operation
         if($this->request->getMethod() == "post"){
             
             $model = new AppointmentsModel();
             
+            //Prepare the body to be sent with the request
             $data = [
                 'User_ID' => session()->get('id'),
-                // 'Therapist_ID'=>$this->request->getPost('thrid'),
                 'Therapist_Name' => $this->request->getPost('thrname'),
                 'Date' => $this->request->getPost('date'),
                 'Time_slot' => date("H:i:s",strtotime($this->request->getPost('time'))),
@@ -38,9 +39,13 @@ class Appointment extends BaseController
             ];
 
             //Insert data into google calendar 
+
+            //Get the access token from the local MySQL DB
             $model = new UsersModel();
             $dbdata = $model->where('User_ID', session()->get('id'))->first();
             $accessToken = $dbdata['GoogleCalendarAccessToken'];
+
+            //If the access token in non-empty try creating the event in the google calendar
             if(!empty($accessToken) ){
                 try{
                     $controller = new GoogleCalendar();
@@ -82,6 +87,7 @@ class Appointment extends BaseController
             return redirect()->back()->with('data', $data);
             
         }
+        //Else return to apt_booking
         else{
             return view('Apt_booking');
         }
@@ -147,9 +153,7 @@ class Appointment extends BaseController
             try{
                 // print_r($this->request->getPost('aptid'));
                 $model->where('fmRecordId', $id)->delete();
-                // print_r($apt_id); exit();
-                // $model->delete($apt_id);
-                // exit();
+                
             }
             catch(\Exception $e){
                 $data['msg'] = $e->getMessage();
@@ -168,8 +172,7 @@ class Appointment extends BaseController
         return redirect('appointments');
     }
 
-    public function fetchAppointmentsByUserIdDate()
-    {
+    public function fetchAppointmentsByUserIdDate(){
         // Load the model
         $appointmentsModel = new AppointmentsModel();
 
@@ -187,11 +190,7 @@ class Appointment extends BaseController
           array_push($data['times'], $appointment['Time_slot']);
         }
         print_r(json_encode($data)); exit();
-
-        // Do something with $appointments, like passing it to a view
-        // header('Content-Type: application/json');
-        // echo json_encode($data);
-        // exit();
+        // return $data;
 
     }
 

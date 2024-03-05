@@ -25,8 +25,7 @@ class Auth extends BaseController
     }
 
     // Authenticate the entered the user data with the filemaker db and authenticate the user accordingly
-    public function user_login()
-    {
+    public function user_login(){
         if($this->request->getMethod() == 'get'){
             return view('user_login');
         }
@@ -41,12 +40,17 @@ class Auth extends BaseController
             $session = session();
             $userModel = new UsersModel();
 
+            //Get the user data from the database using getUserByEmail function
             $dbdata = $userModel->getUserByEmail($email);
 
+            //If the user data exists
             if($dbdata)
             {
+                //Verify if the password entered is correct or not
                 $dbpass = $dbdata['Password'];
                 $authenticatePassword = password_verify($password, $dbpass);
+
+                //if the entered password is correct then log in the user and start a new session for the user
                 if($authenticatePassword){
                     $ses_data = [
                         'id' => $dbdata['User_ID'],
@@ -57,10 +61,13 @@ class Auth extends BaseController
                     $session->set($ses_data);
                     return redirect()->to('/doctors_list');
                 }
+
+                // else print pasword is incorrect
                 else{
                     $user['passwordincorrect'] = 'Password is incorrect!';
                 }
             }
+            //else print user doesn't exist
             else{
                 $user['emailinvalid'] = 'User not found!';
             }
@@ -77,20 +84,28 @@ class Auth extends BaseController
         }
         
         else if($this->request->getMethod()=='post'){
+
+            //load the form helper function used form validation
             helper('form');
+
+            //define the rules for each field in the rules array
             $rules = [
                 'fullname' => 'required|min_length[6]|max_length[50]',
                 'email' => 'required|min_length[6]|max_length[50]|valid_email',
                 'password' => 'required|regex_match[^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})]',
                 'conf_password' => 'matches[password]',
             ];
+
+            //Validate the data against the mentioned rules
             $data = $this->request->getPost(array_keys($rules));
+
+            //for each form field store the validation result
             if(!$this->validateData($data, $rules)){
                 $data['validation'] = $this->validator;
                 return view('user_signup', $data);
             }
             else{
-                
+                //Check if the user entered already exists in the database
                 $model = new UsersModel();
                 if($model->getUserByEmail($data['email'])){
                     $data['error'] = 'User with this email already exists.';

@@ -1,3 +1,10 @@
+/**
+ * 
+ * Route file: used to route a URL to the specified function inside a controller 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
 <?php
 
 use CodeIgniter\Router\RouteCollection;
