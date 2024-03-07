@@ -1,3 +1,4 @@
+<?php
 /**
  * 
  * Route file: used to route a URL to the specified function inside a controller 
@@ -5,8 +6,6 @@
  * @version 1.0
  * 
  */
-<?php
-
 use CodeIgniter\Router\RouteCollection;
 
 /**

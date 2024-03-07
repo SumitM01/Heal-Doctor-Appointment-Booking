@@ -1,3 +1,4 @@
+<?php
 /**
  * 
  * This view is for displaying all the Therapist Details in list view 
@@ -5,6 +6,7 @@
  * @version 1.0
  * 
  */
+?>
 <!DOCTYPE html>
 <html>
     <head>

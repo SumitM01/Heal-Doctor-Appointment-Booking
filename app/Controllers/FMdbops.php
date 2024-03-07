@@ -23,10 +23,10 @@ class FMdbops extends BaseController
 {
     //Global token to be used for every call.
     private $Token;
-    // private $DBURL = "kibiz.smtech.cloud";
-    private $DBURL = "172.16.8.153";
-    // private $User = 'APIaccess2';
-    private $User = 'APIaccess';
+    private $DBURL = "kibiz.smtech.cloud";
+    // private $DBURL = "172.16.8.153";
+    private $User = 'APIaccess2';
+    // private $User = 'APIaccess';
     private $Pass = 'dataAPI24';
     public function index($token)
     {

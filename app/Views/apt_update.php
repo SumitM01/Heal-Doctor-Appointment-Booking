@@ -1,3 +1,4 @@
+<?php
 /**
  * 
  * View for updating user appointment 
@@ -5,6 +6,7 @@
  * @version 1.0
  * 
  */
+?>
 <!DOCTYPE html>
 <html>
   <head>

@@ -1,3 +1,4 @@
+<?php
 /**
  * 
  * List view for all appointments for a user 
@@ -5,6 +6,7 @@
  * @version 1.0
  * 
  */
+?>
 <!DOCTYPE html>
 <html>
     <head>

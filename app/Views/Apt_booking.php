@@ -1,3 +1,4 @@
+<?php
 /**
  * 
  * This View is for booking an appointment using the calendar and the time slots displayed
@@ -6,7 +7,6 @@
  * @version 1.0
  * 
  */
-<?php
 use App\Models\AppointmentsModel;
 ?>
 
@@ -61,11 +61,13 @@ use App\Models\AppointmentsModel;
           <div class="modal-content">
           <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">Appointment Created</h5>
+              
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
               </button>
           </div>
           <div class="modal-body" id="modalContent">
+          
               <!-- Appointment details will be populated here -->
           </div>
           <div class="modal-footer">
@@ -116,6 +118,7 @@ use App\Models\AppointmentsModel;
           </div>
           <div class="col-md-11">
             <h2>Book Appointment</h2>
+            <!-- <img src='assets\media\verified.gif' style="width: 28px;height: 28px;"> -->
           </div>
         </div>
         <div class="row mt-4">

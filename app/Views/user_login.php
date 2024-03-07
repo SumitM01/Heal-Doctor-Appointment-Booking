@@ -1,3 +1,12 @@
+<?php
+/**
+ * 
+ * User Login : Handles the user login for the web application 
+ * @author sumit mishra cr7sumitmishra@gmail.com
+ * @version 1.0
+ * 
+ */
+?>
 <!DOCTYPE html>
 <html>
     <head>

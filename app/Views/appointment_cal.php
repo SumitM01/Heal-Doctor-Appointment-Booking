@@ -1,3 +1,4 @@
+<?php
 /**
  * 
  * Calendar View for booked appointments
@@ -5,6 +6,7 @@
  * @version 1.0
  * 
  */
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -78,17 +80,41 @@
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                 eventClick: function(info) {
                     var eventObj = info.event;
-
+                    
                     // Get the modal and its content
                     var myModal = new bootstrap.Modal(document.getElementById("myModal"));
                     var modalContent = document.getElementById("modalContent");
+                    var dateString = eventObj.start.toLocaleDateString('en-US');
+                    var timeString = eventObj.start.toLocaleTimeString('en-US');
 
+                    //Get the current date and time
+                    const currentDate = new Date();
+                    const currentDateString = currentDate.toISOString().split('T')[0];
+                    const currentTimeString = currentDate.toTimeString().split(' ')[0];
+
+                    //Convert date and time to date object
+                    const eventDate = new Date(eventObj.start);
+                    console.log(eventDate);
+
+                    //Compare eventDate with current time and date and populate the status
+                    var status;
+                    if(eventDate < currentDate)
+                    {
+                        status = 'Expired';
+                    }
+                    else if(eventDate.toISOString().split('T')[0] === currentDateString && eventDate.toTimeString().split(' ')[0] < currentTimeString)
+                    {
+                        status = 'Pending';
+                    }
+                    else{
+                        status = "Upcoming";
+                    }
                     // Populate modal content with event details
                     modalContent.innerHTML = `
                         <p><b>${eventObj.title}</b></p>
-                        <p><b>Date</b>: ${eventObj.start.toLocaleDateString('en-US')}</p>
-                        <p><b>Time</b>: ${eventObj.start.toLocaleTimeString('en-US')}</p>
-                        <p><b>Status</b>: ----</p>
+                        <p><b>Date</b>: ${dateString}</p>
+                        <p><b>Time</b>: ${timeString}</p>
+                        <p><b>Status</b>: ${status}</p>
                     `;
 
                     // Show the modal
@@ -119,7 +145,7 @@
                                 if($apt['fieldData']['User_ID'] == session()->get('id')){ ?>
                     { 
                     id: '<?php echo $apt['fieldData']['Appointment_ID']; ?>',
-                    title: 'Appointment with <?php echo $apt['fieldData']['Therapist_Name']; ?>' ,
+                    title: 'Appointment with Dr. <?php echo $apt['fieldData']['Therapist_Name']; ?>' ,
                     start: '<?php echo date('Y-m-d', strtotime($apt['fieldData']['Date']));?>T<?php echo $apt['fieldData']['Time_Slot'];?>',
                     // end: '2024-02-09T01:00:00',
                     color: 'green'
@@ -145,6 +171,12 @@
     </head>
 
     <body>
+    //==============================================================================================================
+    <div id="eventPopover" class="popover fade show bs-popover-top" role="tooltip" style="display: none;">
+    <div class="arrow"></div>
+    <div id="eventPopoverContent" class="popover-body"></div>
+    </div>
+    //==============================================================================================================
     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
