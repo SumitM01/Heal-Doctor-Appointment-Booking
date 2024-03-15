@@ -19,72 +19,74 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 
-class FMdbops extends BaseController
+class FMDBOps extends BaseController
 {
     //Global token to be used for every call.
     private $Token;
-    private $DBURL = "kibiz.smtech.cloud";
-    // private $DBURL = "172.16.8.153";
-    private $User = 'APIaccess2';
-    // private $User = 'APIaccess';
-    private $Pass = 'dataAPI24';
-    public function index($token)
+    // private $DBURL = $_ENV['URL'];
+    // private $User = $_ENV['USER'];
+    // private $Pass = $_ENV['PASS'];
+    public function index()
     {
-        $this->Token = $token;
+        
     }
 
     //Function which validates the session and gets the session token.
-    public function fmValidateSession(){
+    public function fmValidateSession()
+    {
         //Send request to Filemaker data API to authenticate the user and get an access token to store.
-        
-        try{
+        try {
             $client = Services::curlrequest();
-            $response = $client->request('POST','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/sessions', [
+            $response = $client->request('POST','https://'.urlencode($_ENV['URL']).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/sessions', [
             'headers'=> [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Basic ' . base64_encode($this->User . ':' . $this->Pass)
+                'Authorization' => 'Basic ' . base64_encode($_ENV['USER'] . ':' . $_ENV['PASS'])
             ],
                 'verify' =>  false //Ignore SSL certificate validation
             ]);
             // Check the response status data['code']
-            if($response->getStatusCode() == 200) {
+            if ($response->getStatusCode() == 200) {
                 
                 //Decode the json response body
                 $responseData = json_decode($response->getBody(), true);
-                //Get the session token and store it
-                $this->index($responseData['response']['token']);
+                //Get the session token and store it in session array
+                $ses_data = [
+                    'FMDataAPIToken' => $responseData['response']['token']
+                ];
+                session()->set($ses_data);
+                
+                // $this->index($responseData['response']['token']);
             }
         }
-        catch(\Exception $e){
-            print_r('Validation Error');
+        catch (\Exception $e) {
+            print_r($e->getMessage());
         }
     }
 
     //Function to insert data into FM database
-    public function fmInsertData($data){
-        //validate the session and get a new token
-        $this->fmValidateSession();
-
+    public function fmInsertData($data)
+    {
+        
         //Prepare the json body to be sent with the request
         $requestBody = [
             "fieldData"=> [
-                "User_ID"=>$data['User_ID'],
-                "Therapist_Name"=>$data['Therapist_Name'],
+                "UserID"=>$data['User_ID'],
+                "TherapistName"=>$data['Therapist_Name'],
                 "Date"=>date('m-d-Y',strtotime($data['Date'])),
-                "Time_Slot"=>$data['Time_slot'],
+                "TimeSlot"=>$data['Time_slot'],
             ]
         ];
         $data = [];
         $client = Services::curlrequest();
-        // print_r("Bearer ".$this->Token); //debug purpose
+        // print_r("Bearer ".session()->get('FMDataAPIToken')); //debug purpose
 
         //Send the request to create new record using the body defined above
-        try{
+        try {
            
-            $response = $client->request('POST','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records', [
+            $response = $client->request('POST','https://'.urlencode($_ENV['URL']).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records', [
                 'headers'=> [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->Token
+                    'Authorization' => 'Bearer ' . session()->get('FMDataAPIToken')
                 ],
                     'verify' =>  false, //Ignore SSL certificate validation
                     'body'=> json_encode($requestBody)
@@ -93,73 +95,90 @@ class FMdbops extends BaseController
             // Check if the request was successful
             if ($response->getStatusCode() == 200) {
                 $data['code'] = $response->getStatusCode();
+                
                 //Insert the returned recordID in the MySQL DB for future use
                 $recordID = json_decode($response->getBody(), true)['response']['recordId'];
                 $data['fmRecordId'] = $recordID;
                 // print_r($data); exit();
-            } else {
+            } 
+            else {
                 // if any error occurs just record it
+                
                 $data['code'] = $response->getStatusCode();
+                
             }
         }
-        catch(\Exception $e){
+        catch (\Exception $e) {
+            
             // Check if the exception is due to an expired session token
-            if (strpos($e->getMessage(), '401 Unauthorized') !== false) {
+            if (strpos($e->getMessage(), '401') !== false) {
+                // print_r($e->getMessage()); exit();
                 // Renew the session token
                 $this->fmValidateSession();
-                // print_r($e->getMessage());
-
+                
                 // Retry the insert operation with the new session token
-                $this->fmInsertData($data);
-            } else {
+                return $this->fmInsertData($data);
+            } 
+            else {
                 // Handle other exceptions
                 // echo "Error: " . $e;
-                print_r($e->getMessage());
+                $data['code'] = "Error";
             }
         }
         return $data;
     }
 
     // Get the therapist list from the FileMaker Database
-    public function fmGetTherapistData(){
-        //Validate the session and get the validation token
-        $this->fmValidateSession();
+    public function fmGetTherapistData()
+    {
         $data = [];
         //Fetch the data from FileMaker Database using Data API call
-        try{
+        try {
             $client = Services::curlrequest();
 
-            $response = $client->request('GET', 'https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/Therapist_Table/records',[
+            $response = $client->request('GET', 'https://'.urlencode($_ENV['URL']).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/Therapist_Table/records',[
                 'headers'=> [
-                    'Authorization' => 'Bearer ' . $this->Token
+                    'Authorization' => 'Bearer ' . session()->get('FMDataAPIToken')
                 ],
                     'verify' =>  false
             ]);
             $responseData = json_decode($response->getBody(), true);
             
             $data['responseData'] =  $responseData['response']['data'];
-            // print_r($data['responseData']);
+            // print_r($data['responseData']); exit();
         }
-        catch(\Exception $e){
-            // print_r($e->getMessage());
-            $data['responseData'] = $e->getMessage();
-        }
-        return $data;
+        catch (\Exception $e) {
+            // Check if the exception is due to an expired session token
+            if (strpos($e->getMessage(), '401') !== false) {
+                // Renew the session token
+                $this->fmValidateSession();
+                // print_r($e->getMessage());
 
+                // Retry the operation with the new session token
+                return $this->fmGetTherapistData();
+            } 
+            else {
+                // Handle other exceptions
+                // echo "Error: " . $e;
+                print_r($e->getMessage());
+            }
+        
+        }
+        // print_r($data); exit();
+        return $data;
     }
 
     // Get the appointments list for a user from the Filemaker Database
-    public function fmGetAptData(){
-        //Validate the session and get the validation token
-        $this->fmValidateSession();
+    public function fmGetAptData() 
+    {
         $data = [];
         //Fetch the data from FileMaker Database using Data API call
-        try{
+        try {
             $client = Services::curlrequest();
 
-            $response = $client->request('GET', 'https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records',[
+            $response = $client->request('GET', 'https://'.urlencode($_ENV['URL']).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records',[
                 'headers'=> [
-                    'Authorization' => 'Bearer ' . $this->Token
+                    'Authorization' => 'Bearer ' . session()->get('FMDataAPIToken')
                 ],
                     'verify' =>  false
             ]);
@@ -169,37 +188,47 @@ class FMdbops extends BaseController
             
             // print_r($data['responseData']);
         }
-        catch(\Exception $e){
-            // print_r($e->getMessage());
-            $data['responseData'] = $e->getMessage();
+        catch (\Exception $e) {
+            // Check if the exception is due to an expired session token
+            if (strpos($e->getMessage(), '401') !== false) {
+                // Renew the session token
+                $this->fmValidateSession();
+                // print_r($e->getMessage());
+
+                // Retry the insert operation with the new session token
+                return $this->fmGetAptData();
+            } 
+            else {
+                // Handle other exceptions
+                // echo "Error: " . $e;
+                print_r($e->getMessage());
+            }
         }
         return $data;
     }
 
    
 
-    public function fmUpdateData($data){
-        //Validate the session and get a new session token
-        $this->fmValidateSession();
-
+    public function fmUpdateData($data , $retryCount = 0)
+    {
         //Prepare the new session body to be sent
         $requestBody = [
             "fieldData"=> [
                 "Date"=>date('m-d-Y',strtotime($data['Date'])),
-                "Time_Slot"=>$data['Time_slot'],
+                "TimeSlot"=>$data['Time_slot'],
             ]
         ];
         $data['code'] = '';
         $client = Services::curlrequest();
-        // print_r("Bearer ".$this->Token); //debugging purpose
+        // print_r("Bearer ".session()->get('FMDataAPIToken')); //debugging purpose
 
         // Send the request to update the record in the database using the fmRecordId
-        try{
+        try {
            
-            $response = $client->request('PATCH','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($data['fmRecordId']), [
+            $response = $client->request('PATCH','https://'.urlencode($_ENV['URL']).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($data['fmRecordId']), [
                 'headers'=> [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->Token
+                    'Authorization' => 'Bearer ' . session()->get('FMDataAPIToken')
                 ],
                     'verify' =>  false, //Ignore SSL certificate validation
                     'body'=> json_encode($requestBody)
@@ -208,40 +237,43 @@ class FMdbops extends BaseController
             // Check if the request was successful
             if ($response->getStatusCode() == 200) {
                 $data['code'] = $response->getStatusCode();
-            } else {
+            } 
+            else {
                 // Error occurred
                 $data['code'] = $response->getStatusCode();
             }
         }
-        catch(\Exception $e){
+        catch (\Exception $e) {
+            print_r($e->getMessage()); exit();
             // Check if the exception is due to an expired session token
-            if (strpos($e->getMessage(), '401 Unauthorized') !== false) {
+            if (strpos($e->getMessage(), '401') !== false && $retryCount < 2) {
+                print_r($e->getMessage()); 
                 // Renew the session token
                 $this->fmValidateSession();
                 // print_r($e->getMessage());
 
                 // Retry the insert operation with the new session token
-                $this->fmInsertData($data);
-            } else {
+                return $this->fmUpdateData($data, $retryCount + 1);
+            }
+            else {
                 // Handle other exceptions
-                // echo "Error: " . $e;
-                print_r($e->getMessage());
+                $data['code'] = "Error";
             }
         }
         return $data['code'];
     }
 
     // FileMaker API function to delete data in the FileMaker Database using the recordId
-    public function fmDeleteApt($id){
-        $this->fmValidateSession();
+    public function fmDeleteApt($id)
+    {
         $client = Services::curlrequest();
 
         //Delete the data from the database
-        try{
-            $response = $client->request('DELETE','https://'.urlencode($this->DBURL).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($id), [
+        try {
+            $response = $client->request('DELETE','https://'.urlencode($_ENV['URL']).'/fmi/data/vLatest/databases/Therapy_Service_Tracker_Data/layouts/APPOINTMENTS/records/'.urlencode($id), [
                 'headers'=> [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->Token
+                    'Authorization' => 'Bearer ' . session()->get('FMDataAPIToken')
                 ],
                     'verify' =>  false, //Ignore SSL certificate validation
             ]);
@@ -249,14 +281,28 @@ class FMdbops extends BaseController
             // Check if the request was successful
             if ($response->getStatusCode() == 200) {
                 $data['code'] = $response->getStatusCode();
-            } else {
+            }
+            else {
                 // Error occurred
                 $data['code'] = $response->getStatusCode();
             }
             
         }
-        catch(\Exception $e){
-            $data['msg'] = $response->getBody();
+        catch (\Exception $e) {
+            // Check if the exception is due to an expired session token
+            if (strpos($e->getMessage(), '401') !== false) {
+                // Renew the session token
+                $this->fmValidateSession();
+                // print_r($e->getMessage());
+
+                // Retry the insert operation with the new session token
+                return $this->fmDeleteApt($id);
+            } 
+            else {
+                // Handle other exceptions
+                // echo "Error: " . $e;
+                print_r($e->getMessage());
+            }
         }
         return $data;
     }

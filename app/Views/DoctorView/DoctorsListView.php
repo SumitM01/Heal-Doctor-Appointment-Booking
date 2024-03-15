@@ -130,6 +130,7 @@
                     <!-- div containing doctors list -->
                     <div class="list-group">
                         <?php
+                        // print_r($responseData);
                         if(isset($responseData))
                         {   
                             // print_r($responseData);
@@ -141,7 +142,7 @@
                                         </div>
                                         <div class="col-md-7">
                                             <div class="card-body">
-                                                <h5 class="card-title"><?php echo($doctor['fieldData']['Therapist_Name']) ?></h5>
+                                                <h5 class="card-title"><?php echo($doctor['fieldData']['TherapistName']) ?></h5>
                                                 <ul class="d-flex px-0">
                                                     <li class="mx-3"><p class="card-text"><b>Cardiologist</b></p></li>
                                                     <li class="mx-3"><p class="card-text"><b><?php echo($doctor['fieldData']['Email']) ?></b></p></li>
@@ -155,8 +156,8 @@
                                             </div>
                                         </div>  
                                         <div class="col-md-3 p-4">
-                                            <a href="<?= base_url('/apt-book') ?>?therapist=<?= urlencode($doctor['fieldData']['Therapist_Name']) ?>" class="btn m-2">Book Appointment</a>
-                                            <a href="<?= base_url('/doctor-details') ?>?id=<?= urlencode($doctor['fieldData']['Therapist_ID']) ?>" class="btn m-2">Know More</a>
+                                            <a href="<?= base_url('/apt-book') ?>?therapist=<?= urlencode($doctor['fieldData']['TherapistName']) ?>" class="btn m-2">Book Appointment</a>
+                                            <a href="<?= base_url('/doctor-details') ?>?id=<?= urlencode($doctor['fieldData']['TherapistID']) ?>" class="btn m-2">Know More</a>
                                         </div>
                                     </div>
                                 </div>

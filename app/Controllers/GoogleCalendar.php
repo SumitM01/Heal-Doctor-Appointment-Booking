@@ -16,6 +16,21 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class GoogleCalendar extends BaseController
 {
+    //Model variables to be used
+    // private $AppointmentsModel;
+    private $UsersModel;
+    // private $GoogleCalendarController;
+    // private $FMDBOpsController;
+
+    //Constructor for GoogleCalendar controller
+    public function initController(\CodeIgniter\HTTP\RequestInterface $request, ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    {
+        // $this->AppointmentsModel = new AppointmentsModel();
+        $this->UsersModel = new UsersModel();
+        // $this->GoogleCalendarController = new GoogleCalendar();
+        // $this->FMDBOpsController = new FMDBOps();
+    }
+
     public function index()
     {
         //
@@ -26,7 +41,8 @@ class GoogleCalendar extends BaseController
     private $CALENDAR_EVENT = "https://www.googleapis.com/calendar/v3/calendars/";
 
     //Function to authorize google calendar for the user 
-    public function googleAuth(){
+    public function googleAuth()
+    {
         $authUrl = $this->OAUTH_URI;
         $authUrl .= '?client_id=' . urlencode($_ENV['GOOGLE_CLIENT_ID']);
         $authUrl .= '&response_type=code';
@@ -40,7 +56,8 @@ class GoogleCalendar extends BaseController
     }
 
     // Function to get access token and refresh token after successful authorization
-    public function getTokens(){
+    public function getTokens()
+    {
         $auth_url = $this->OAUTH_TOKEN_URI;
         $auth_url .= '?code='. $_GET['code'];
         $auth_url .= '&client_id='. urlencode($_ENV['GOOGLE_CLIENT_ID']);
@@ -50,13 +67,13 @@ class GoogleCalendar extends BaseController
 
         // print_r($auth_url); //debugging purpose 
 
-        try{
+        try {
             $client = Services::curlrequest();
             $response = $client->request('POST', $auth_url);
             // print_r($response);
 
             // Check the response status data['code']
-            if($response->getStatusCode() == 200) {
+            if ($response->getStatusCode() == 200) {
                 
                 //Decode the response body
                 $responseData = json_decode($response->getBody(), true);
@@ -66,7 +83,6 @@ class GoogleCalendar extends BaseController
                 // print_r($accessToken);//debugging purpose
 
                 //Get the access token and store it in the database
-                $model = new UsersModel();
 
                 $data = [
                     'GoogleCalendarAccessToken' => $accessToken,
@@ -78,12 +94,12 @@ class GoogleCalendar extends BaseController
                 // print_r(session()->get('id'));
 
                 //Update the GoogleCalendarAccessToken and GoogleCalendarRefreshToken fields in the database
-                $model->update(session()->get('id'), $data);
+                $this->UsersModel->update(session()->get('id'), $data);
 
             }
             
         }
-        catch(\Exception $e){
+        catch (\Exception $e) {
             // catch the error and print the error message for debugging purpose
             print_r('Error '. $e->getMessage() . ' Inside getTokens()');
         }
@@ -91,15 +107,14 @@ class GoogleCalendar extends BaseController
     }
 
     //Function to get the access Token by using Refresh Token
-    public function updateAccessToken(){
-
+    public function updateAccessToken()
+    {
         //Retrieve the refresh token from the database
-        $model = new UsersModel();
-        $recordData = $model->where('User_ID', session()->get('id'))->first();
+        $recordData = $this->UsersModel->where('User_ID', session()->get('id'))->first();
         $refreshToken = $recordData['GoogleCalendarRefreshToken'];
 
         //Call the token endpoint to fetch the access token
-        try{
+        try {
             $client = Services::curlrequest();
             $response = $client->request('POST', 'https://accounts.google.com/o/oauth2/token', [
                 'headers' => [
@@ -114,7 +129,7 @@ class GoogleCalendar extends BaseController
             ]);
 
             //Check if the request returns success/error
-            if($response->getStatusCode() == 200) {
+            if ($response->getStatusCode() == 200) {
                 // print_r($response->getStatusCode()); exit(); // debug purpose
                 $responseData = json_decode($response->getBody(), true);
                 $accessToken = $responseData['access_token'];
@@ -123,26 +138,26 @@ class GoogleCalendar extends BaseController
                 $dbdata = [
                     'GoogleCalendarAccessToken' => $accessToken,
                 ];
-                $model->update(session()->get('id'), $dbdata);
+                $this->UsersModel->update(session()->get('id'), $dbdata);
             }
-            else{
+            else {
                 print_r(''. $response->getStatusCode());
             }
             
         }
-        catch(\Exception $e){
+        catch (\Exception $e) {
             print_r(''. $e->getMessage() . ' Inside updateAccessToken()');
         }
     }
 
     //Function to create an event in the user's google calendar
-    public function createCalendarEvent($data, $retryCount = 0){
+    public function createCalendarEvent($data, $retryCount = 0)
+    {
 
         $client = Services::curlrequest();
 
         //Fetch the access token from the database
-        $model = new UsersModel();
-        $recordData = $model->where('User_ID', session()->get('id'))->first();
+        $recordData = $this->UsersModel->where('User_ID', session()->get('id'))->first();
         $accessToken = $recordData['GoogleCalendarAccessToken'];
 
         //Prepare json body data to be sent
@@ -163,7 +178,7 @@ class GoogleCalendar extends BaseController
         // print_r(json_encode($bodyData, JSON_UNESCAPED_SLASHES)); exit(); //debugging purpose
 
         //Send the request to create the calendar event 
-        try{
+        try {
             $response = $client->request('POST', 'https://www.googleapis.com/calendar/v3/calendars/cr7sumitmishra@gmail.com/events', [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -181,9 +196,9 @@ class GoogleCalendar extends BaseController
             }
         }
         //Catch the exception which occurs
-        catch(\Exception $e){
+        catch (\Exception $e) {
             //If error code is 401, update the access token
-            if(strpos($e->getMessage(), '401') !== false && $retryCount < 2){
+            if (strpos($e->getMessage(), '401') !== false && $retryCount < 2) {
                 $data['msg'] = 'access token expired! Getting new access token'; 
                 //Update the access token using refresh token
                 $this->updateAccessToken() ;
@@ -191,7 +206,7 @@ class GoogleCalendar extends BaseController
                 $this->createCalendarEvent($data, $retryCount + 1);
             }
             //else just ignore the error
-            else{
+            else {
                 $data['msg'] = $e->getMessage() . ' Inside createCalendarEvent()';
             }
         }

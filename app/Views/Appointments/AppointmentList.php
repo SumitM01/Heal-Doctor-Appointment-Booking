@@ -41,9 +41,9 @@
                 $statuses = [];
 
                 foreach ($responseData as $apt) {
-                    if ($apt['fieldData']['User_ID'] == session()->get('id')) {
+                    if ($apt['fieldData']['UserID'] == session()->get('id')) {
                         // Collect unique therapists
-                        $therapists[$apt['fieldData']['Therapist_Name']] = $apt['fieldData']['Therapist_Name'];
+                        $therapists[$apt['fieldData']['TherapistName']] = $apt['fieldData']['TherapistName'];
 
                         // Collect unique dates
                         $dates[date('d-m-Y', strtotime($apt['fieldData']['Date']))] = date('d-m-Y', strtotime($apt['fieldData']['Date']));
@@ -208,11 +208,11 @@
                                     {   
                                         // print_r($responseData);
                                         foreach($responseData as $apt){
-                                            if($apt['fieldData']['User_ID'] == session()->get('id')){ ?>
+                                            if($apt['fieldData']['UserID'] == session()->get('id')){ ?>
                                 <tr>
-                                    <td><?php echo($apt['fieldData']['Therapist_Name']) ?></td>
+                                    <td><?php echo($apt['fieldData']['TherapistName']) ?></td>
                                     <td><?php echo(date('d-m-Y', strtotime($apt['fieldData']['Date']))) ?></td>
-                                    <td><?php echo($hourDict[$apt['fieldData']['Time_Slot']]) ?></td>
+                                    <td><?php echo($hourDict[$apt['fieldData']['TimeSlot']]) ?></td>
                                     <td><?php echo($apt['fieldData']['Status']) ?></td>
                                     <td><a href="<?= base_url("/apt-update")?>?id=<?= urlencode($apt['recordId']) ?>" class="btn btn-outline-success">Update</a></td>
                                     <td><button type="button" class="btn btn-outline-danger cancel-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-apt-id="<?= $apt['recordId']; ?>">Cancel</button></td>

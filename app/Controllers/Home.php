@@ -15,7 +15,7 @@ use CodeIgniter\Controller;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use CodeIgniter\Database\Exceptions\DatabaseException;
-use App\Controllers\FMdbops;
+use App\Controllers\FMDBOps;
 
 
 class Home extends BaseController
@@ -32,37 +32,36 @@ class Home extends BaseController
     //Heal Landing page controller
     public function heal()
     {
-        return view('heal');
+        return view('Heal');
     }
 
     public function doctor_view()
     {   
         //create fmdbops object
-        $fmobj = new FMdbops();
-        //call fmdbops->get_details to get doctor details
-        //Process the provided data and display the doctors list to the user
-        return view('doctors_list_view', $fmobj->fmGetTherapistData());
+        $fmobj = new FMDBOps();
+        // print_r($fmobj->fmGetTherapistData()); exit();
+        return view('DoctorView\DoctorsListView', $fmobj->fmGetTherapistData());
     }
 
     public function appointment_list()
     {
-        $fmobj = new FMdbops();
-        return view('appointment_list', $fmobj->fmGetAptData());
+        $fmobj = new FMDBOps();
+        return view('Appointments\AppointmentList', $fmobj->fmGetAptData());
     }
 
     public function appointment_cal()
     {
-        $fmobj = new FMdbops();
-        return view('appointment_cal', $fmobj->fmGetAptData());
+        $fmobj = new FMDBOps();
+        return view('Appointments\AppointmentCal', $fmobj->fmGetAptData());
     }
 
     public function doctor_detail()
     {
-        return view('doctor_detail');
+        return view('DoctorView\DoctorDetail');
     }
 
     public function apt_book()
     {
-        return view('Apt_booking');
+        return view('Appointments\AptBooking');
     }
 }

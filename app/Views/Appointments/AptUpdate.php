@@ -23,6 +23,61 @@
   </head>
   <body>
     <?php $id = $_GET['id'] ?? ''; ?>
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Appointment Update</h5>
+              
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body" id="modalContent">
+          
+              <!-- Appointment details will be populated here -->
+          </div>
+          <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Dismiss</button>
+          </div>
+          </div>
+      </div>
+    </div>
+    <?php
+    //Get the therapist name from the GET array and flashdata from the response
+    $therapistName = $_GET['therapist'] ?? '';
+    $flashdata = session()->getFlashdata('data');
+    //If the flash data returned is not empty
+    if (!empty($flashdata)) {
+      // print_r($flashdata['msg']);
+      
+        ?>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var myModal = new bootstrap.Modal(document.getElementById("myModal"));
+          var modalContent = document.getElementById("modalContent");
+          <?php if ($flashdata['msg'] == "Error") { ?>
+          // Populate modal content with event details
+          modalContent.innerHTML = `Error occured while updating your appointment! Please report this to the developer.`;
+          <?php }
+          else { ?>
+          // Populate modal content with event details
+          modalContent.innerHTML = `Appointment has been successfully updated!`;
+          <?php } ?>
+          // Show the modal
+          myModal.show();
+
+          // Close modal when close button is clicked
+          var closeButton = document.querySelector(".modal .close");
+          closeButton.addEventListener("click", function() {
+              myModal.hide();
+          });
+        });
+        
+        </script>
+        <?php
+      }
+    ?>
     <div class="container h-100 p-5 bg-white rounded">
         <div class="row">
           <div class="col-md-1">

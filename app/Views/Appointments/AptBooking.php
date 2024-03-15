@@ -89,10 +89,14 @@ use App\Models\AppointmentsModel;
         document.addEventListener('DOMContentLoaded', function() {
           var myModal = new bootstrap.Modal(document.getElementById("myModal"));
           var modalContent = document.getElementById("modalContent");
-
+          <?php if ($flashdata['msg'] == "Error") { ?>
           // Populate modal content with event details
-          modalContent.innerHTML = `Your appointment has been created and <?php echo $flashdata['msg'] ?>`;
-
+          modalContent.innerHTML = `Error occured while creating your appointment! Please report this to the developer.`;
+          <?php }
+          else { ?>
+          // Populate modal content with event details
+          modalContent.innerHTML = `Appointment has been successfully created!`;
+          <?php } ?>
           // Show the modal
           myModal.show();
 

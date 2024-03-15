@@ -7,6 +7,7 @@
  * @version 1.0
  * 
  */
+
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
@@ -19,39 +20,46 @@ use App\Models\UsersModel;
 
 class Auth extends BaseController
 {
+    //Model variables
+    private $UsersModel;
+
+    //Constructor for Appointment controller
+    public function initController(\CodeIgniter\HTTP\RequestInterface $request, ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    {
+        // $this->AppointmentsModel = new AppointmentsModel();
+        $this->UsersModel = new UsersModel();
+    }
+
     public function index()
     {
-        //
+        
     }
 
     // Authenticate the entered the user data with the filemaker db and authenticate the user accordingly
-    public function user_login(){
-        if($this->request->getMethod() == 'get'){
-            return view('user_login');
+    public function user_login()
+    {
+        if ($this->request->getMethod() == 'get') {
+            return view('User\UserLogin');
         }
         
-        else if($this->request->getMethod()=='post')
-        {
-
+        else if ($this->request->getMethod()=='post') {
             $data = $this->request->getPost();
             $email = $data['email'];
             $password = $data['password'];
 
             $session = session();
-            $userModel = new UsersModel();
 
             //Get the user data from the database using getUserByEmail function
-            $dbdata = $userModel->getUserByEmail($email);
+            $dbdata = $this->UsersModel->getUserByEmail($email);
 
             //If the user data exists
-            if($dbdata)
-            {
+            if ($dbdata) {
                 //Verify if the password entered is correct or not
                 $dbpass = $dbdata['Password'];
                 $authenticatePassword = password_verify($password, $dbpass);
 
                 //if the entered password is correct then log in the user and start a new session for the user
-                if($authenticatePassword){
+                if ($authenticatePassword) {
                     $ses_data = [
                         'id' => $dbdata['User_ID'],
                         'name' => $dbdata['Name'],
@@ -63,15 +71,15 @@ class Auth extends BaseController
                 }
 
                 // else print pasword is incorrect
-                else{
+                else {
                     $user['passwordincorrect'] = 'Password is incorrect!';
                 }
             }
             //else print user doesn't exist
-            else{
+            else {
                 $user['emailinvalid'] = 'User not found!';
             }
-            return view('user_login', $user);
+            return view('User\UserLogin', $user);
         }
         
     }
@@ -79,11 +87,11 @@ class Auth extends BaseController
     // Sign up user process for the user
     public function user_signup()
     {
-        if($this->request->getMethod() == 'get'){
-            return view('user_signup');
+        if ($this->request->getMethod() == 'get') {
+            return view('User\UserSignup');
         }
         
-        else if($this->request->getMethod()=='post'){
+        else if ($this->request->getMethod()=='post') {
 
             //load the form helper function used form validation
             helper('form');
@@ -100,24 +108,23 @@ class Auth extends BaseController
             $data = $this->request->getPost(array_keys($rules));
 
             //for each form field store the validation result
-            if(!$this->validateData($data, $rules)){
+            if (!$this->validateData($data, $rules)) {
                 $data['validation'] = $this->validator;
-                return view('user_signup', $data);
+                return view('User\UserSignup', $data);
             }
-            else{
+            else {
                 //Check if the user entered already exists in the database
-                $model = new UsersModel();
-                if($model->getUserByEmail($data['email'])){
+                if ($this->UsersModel->getUserByEmail($data['email'])) {
                     $data['error'] = 'User with this email already exists.';
                 }
-                else{
+                else {
                     $newUser = [
                         'Name' => $data['fullname'],
                         'Email'    => $data['email'],
                         'Password' => crypt($data['password'], PASSWORD_DEFAULT)
                     ];
     
-                    if ($model->createUser($newUser)) {
+                    if ($this->UsersModel->createUser($newUser)) {
                         // User created successfully
                         // Redirect to login page or any other page
                         return redirect()->to(site_url('user-login'))->with('success', 'User created successfully. You can now login.');
@@ -127,12 +134,12 @@ class Auth extends BaseController
                     }
                 }
                 
-                return view('user_signup', $data);
+                return view('User\UserSignup', $data);
                 // return view('user_signup', $data);
             }
         }
-        else{
-            return view('user_signup');
+        else {
+            return view('User\UserSignup');
         }
     }
     

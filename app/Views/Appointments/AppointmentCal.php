@@ -142,11 +142,11 @@
                         {   
                             // print_r($responseData);
                             foreach($responseData as $apt){
-                                if($apt['fieldData']['User_ID'] == session()->get('id')){ ?>
+                                if($apt['fieldData']['UserID'] == session()->get('id')){ ?>
                     { 
-                    id: '<?php echo $apt['fieldData']['Appointment_ID']; ?>',
-                    title: 'Appointment with Dr. <?php echo $apt['fieldData']['Therapist_Name']; ?>' ,
-                    start: '<?php echo date('Y-m-d', strtotime($apt['fieldData']['Date']));?>T<?php echo $apt['fieldData']['Time_Slot'];?>',
+                    id: '<?php echo $apt['fieldData']['AppointmentID']; ?>',
+                    title: 'Appointment with Dr. <?php echo $apt['fieldData']['TherapistName']; ?>' ,
+                    start: '<?php echo date('Y-m-d', strtotime($apt['fieldData']['Date']));?>T<?php echo $apt['fieldData']['TimeSlot'];?>',
                     // end: '2024-02-09T01:00:00',
                     color: 'green'
                     },
@@ -171,12 +171,10 @@
     </head>
 
     <body>
-    //==============================================================================================================
     <div id="eventPopover" class="popover fade show bs-popover-top" role="tooltip" style="display: none;">
     <div class="arrow"></div>
     <div id="eventPopoverContent" class="popover-body"></div>
     </div>
-    //==============================================================================================================
     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
