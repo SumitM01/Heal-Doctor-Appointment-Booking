@@ -18,6 +18,7 @@
         <!-- Load Bootstrap JS and dependencies -->
         <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
         <title>Heal</title>
+        <link rel="icon" href="https://i.imgur.com/ry5gKrT.png" type="image/x-icon">
     </head>
 
     <body>

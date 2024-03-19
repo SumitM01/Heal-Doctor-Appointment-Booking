@@ -26,7 +26,7 @@ class Appointment extends BaseController
     private $FMDBOpsController;
 
     //Constructor for Appointment controller
-    public function initController(\CodeIgniter\HTTP\RequestInterface $request, ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    public function __construct()
     {
         $this->AppointmentsModel = new AppointmentsModel();
         $this->UsersModel = new UsersModel();
@@ -122,7 +122,7 @@ class Appointment extends BaseController
                 'Time_slot' => date("H:i:s",strtotime($this->request->getPost('time'))),
             ];
             
-            //update data in the local database
+            //Update data in the local database
             try {
                 if ($this->AppointmentsModel->update($apt_id, $data)) {
                     $data['msg'] = 'Success! Data updated successfully!';

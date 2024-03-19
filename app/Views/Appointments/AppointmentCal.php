@@ -168,6 +168,7 @@
 
         </script>
         <title>Appointments</title>
+        <link rel="icon" href="https://i.imgur.com/ry5gKrT.png" type="image/x-icon">
     </head>
 
     <body>

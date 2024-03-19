@@ -23,7 +23,7 @@ class GoogleCalendar extends BaseController
     // private $FMDBOpsController;
 
     //Constructor for GoogleCalendar controller
-    public function initController(\CodeIgniter\HTTP\RequestInterface $request, ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    public function __construct()
     {
         // $this->AppointmentsModel = new AppointmentsModel();
         $this->UsersModel = new UsersModel();
@@ -179,7 +179,7 @@ class GoogleCalendar extends BaseController
 
         //Send the request to create the calendar event 
         try {
-            $response = $client->request('POST', 'https://www.googleapis.com/calendar/v3/calendars/cr7sumitmishra@gmail.com/events', [
+            $response = $client->request('POST', 'https://www.googleapis.com/calendar/v3/calendars/'.urlencode(session()->get('email')).'/events', [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer ' . $accessToken,
@@ -211,5 +211,65 @@ class GoogleCalendar extends BaseController
             }
         }
         return $data;
+    }
+    
+    //Function to update the event in the Google Calendar using eventID
+    public function updateCalendarEvent($data, $retryCount = 0)
+    {
+        $client = Services::curlrequest();
+
+        //Fetch the access token from the database
+        $recordData = $this->UsersModel->where('User_ID', session()->get('id'))->first();
+        $accessToken = $recordData['GoogleCalendarAccessToken'];
+
+        //Prepare json body data to be sent
+        $bodyData = [
+            'end' => [
+                'dateTime' => date('Y-m-d',strtotime($data['Date'])) . 'T' . date("H:i:s", strtotime($data['Time_slot']) + 3600),
+                'timeZone' => 'Asia/Kolkata'
+            ],
+            'start' => [
+                'dateTime' => date('Y-m-d',strtotime($data['Date'])) . 'T' . date("H:i:s",strtotime($data['Time_slot'])),
+                'timeZone' => 'Asia/Kolkata'
+            ],
+            'colorId' => '2',
+            'description' => 'Event created by Heal',
+            'summary' => 'Appointment with ' . $data['Therapist_Name']
+        ];
+
+        //Send the request to create the calendar event 
+        try {
+            $response = $client->request('PUT', 'https://www.googleapis.com/calendar/v3/calendars/'.urlencode(session()->get('email')).'/events', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $accessToken,
+                ],
+                'json' => $bodyData
+            ]);
+
+            //Check the response for the request and populate the msg to be returned
+            if($response->getStatusCode() == 200){
+                $data['msg'] = 'added to google calendar successfully!';
+            }
+            else{
+                $data['msg'] = 'couldn\'t add appointment to Google calendar';
+            }
+        }
+        //Catch the exception which occurs
+        catch (\Exception $e) {
+            //If error code is 401, update the access token
+            if (strpos($e->getMessage(), '401') !== false && $retryCount < 2) {
+                $data['msg'] = 'access token expired! Getting new access token'; 
+                //Update the access token using refresh token
+                $this->updateAccessToken() ;
+                //Retry the event creation operation
+                $this->createCalendarEvent($data, $retryCount + 1);
+            }
+            //else just ignore the error
+            else {
+                $data['msg'] = $e->getMessage() . ' Inside createCalendarEvent()';
+            }
+        }
+
     }
 }

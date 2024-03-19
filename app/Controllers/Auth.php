@@ -13,6 +13,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Controller;
+use Config\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use CodeIgniter\Database\Exceptions\DatabaseException;
@@ -24,7 +25,7 @@ class Auth extends BaseController
     private $UsersModel;
 
     //Constructor for Appointment controller
-    public function initController(\CodeIgniter\HTTP\RequestInterface $request, ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    public function __construct()
     {
         // $this->AppointmentsModel = new AppointmentsModel();
         $this->UsersModel = new UsersModel();
@@ -126,7 +127,7 @@ class Auth extends BaseController
     
                     if ($this->UsersModel->createUser($newUser)) {
                         // User created successfully
-                        // Redirect to login page or any other page
+                        // Redirect to login page
                         return redirect()->to(site_url('user-login'))->with('success', 'User created successfully. You can now login.');
                     } else {
                         // Failed to create user

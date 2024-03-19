@@ -129,7 +129,7 @@ class FMDBOps extends BaseController
     }
 
     // Get the therapist list from the FileMaker Database
-    public function fmGetTherapistData()
+    public function fmGetTherapistData($retryCount = 0)
     {
         $data = [];
         //Fetch the data from FileMaker Database using Data API call
@@ -149,13 +149,13 @@ class FMDBOps extends BaseController
         }
         catch (\Exception $e) {
             // Check if the exception is due to an expired session token
-            if (strpos($e->getMessage(), '401') !== false) {
+            if (strpos($e->getMessage(), '401') !== false && $retryCount < 2) {
                 // Renew the session token
                 $this->fmValidateSession();
                 // print_r($e->getMessage());
 
                 // Retry the operation with the new session token
-                return $this->fmGetTherapistData();
+                return $this->fmGetTherapistData($retryCount+1);
             } 
             else {
                 // Handle other exceptions

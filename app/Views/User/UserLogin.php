@@ -17,12 +17,13 @@
 
         <!-- Load Bootstrap JS and dependencies -->
         <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
-        <title>Heal Login</title>
+        <title>User Login</title>
+        <link rel="icon" href="https://i.imgur.com/ry5gKrT.png" type="image/x-icon">
     </head>
 
     <body>
         <div class="cover-container d-flex p-3 mx-auto flex-column justify-content-center">
-            <a href="<?= base_url('hello-world')?>"><h3 class="float-md-start mb-0">Heal</h3></a>
+            <a href="<?= base_url('heal')?>"><h3 class="float-md-start mb-0">Heal</h3></a>
             
             <form class="w-50 mx-auto my-auto p-3 bg-light border border-success-subtle rounded text-center" id="form" action="/user-login" method="post">
                 
